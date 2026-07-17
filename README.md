@@ -1,8 +1,25 @@
 # Mortgage QA Memory MCP
 
-Governed **Playwright QA memory** for Cursor agents — tiered retention, policy pre-save, mortgage compliance audit. Adapted from DoorDash and Salesforce agentic memory patterns.
+**Status:** working POC/MVP, now pivoting toward a governed knowledge-graph
+memory core. See [PLAN.md](./PLAN.md) for the full history (v1 design → v2
+build → v3 roadmap) — start there.
 
-**Status:** working POC/MVP in `packages/*`.
+A governed MCP memory service for **Playwright QA automation**, with **tiered
+retention** and **mortgage compliance audit**, adapted from DoorDash's and
+Salesforce's agentic memory architectures.
+
+See [AGENTS.md](./AGENTS.md) for agent working rules.
+
+---
+
+## Who this is for
+
+- Platform / QA engineers building internal AI tooling on **Cursor**, **Gemini
+  gateway**, **KB MCP**, and **Azure MCP**
+- Mortgage technology teams that need QA intelligence **without** creating a
+  second store of loan data or NPI
+- Teams evaluating **Playwright MCP** + a **QA memory expander** they control
+  end-to-end
 
 ---
 
@@ -10,52 +27,40 @@ Governed **Playwright QA memory** for Cursor agents — tiered retention, policy
 
 ```bash
 npm install
+npm run typecheck
+npm test
 npm run seed:demo
-npm run smoke          # expect SMOKE PASS
-npm run console        # http://127.0.0.1:4173
+npm run smoke        # QA-domain MCP tools
+npm run smoke:graph  # governed knowledge-graph MCP tools
 ```
 
-Point Cursor at [`cursor/mcp.json`](./cursor/mcp.json). Full package map: [docs/11-implementation.md](./docs/11-implementation.md).
+Then point Cursor at [`cursor/mcp.json`](./cursor/mcp.json) and add the
+[`mortgage-qa-triage`](./cursor/skills/mortgage-qa-triage/SKILL.md) skill.
+
+## Layout
+
+| Path | Contents |
+|------|----------|
+| `packages/policy/mqm-policy.yaml` | The one enforced policy: retention, deny patterns, RBAC, write tiers |
+| `packages/shared`, `packages/reporter`, `packages/mcp-server`, `packages/audit-client` | The runnable monorepo — see [PLAN.md](./PLAN.md) v2 |
+| `journeys/le_generation.yaml` | Curated (Tier 2) mortgage journey with TRID checkpoints |
+| `ai-inventory.yaml` | LL-2026-04 AI tool inventory |
+| `cursor/mcp.json`, `cursor/skills/mortgage-qa-triage/` | Cursor MCP config + triage skill |
+| `cursor/qa-testing-agents/` | QA agent definitions (AC explorer, testcase writer, ADO publisher, automation generator, QA assistant) |
+| `eval/` | Golden CI-failure set for flake-classification accuracy |
+| `fixtures/loan-scenarios/` | Synthetic loan data used by tests |
 
 ---
 
-## Documentation
+## Related external references
 
-All docs in **[docs/](./docs/README.md)** — single tree (design + implementation + security + adoption).
+- [DoorDash Ask DoorDash / InfoQ summary](https://www.infoq.com/news/2026/07/doordash-ai-ask-assistant/) — agentic memory + MCP + eval at scale
+- [Playwright MCP docs](https://playwright.dev/docs/getting-started-mcp) — browser automation via MCP
+- [flakiness-knowledge-graph-mcp](https://github.com/vola-trebla/flakiness-knowledge-graph-mcp) — reporter + SQLite + MCP pattern
+- [Fannie Mae LL-2026-04](https://singlefamily.fanniemae.com/news-events/lender-letter-ll-2026-04-governance-framework-use-artificial-intelligence-and-machine-learning) — AI governance for seller/servicers (effective Aug 6, 2026)
+- [Blend Autopilot MCP](https://blend.com/company/newsroom/blend-launches-autopilot-mcp-server-opening-lending-platform-fi-built-ai-agents/) — lending MCP reference architecture
 
-| Start here | Path |
-|------------|------|
-| **Another AI / new project** | [docs/00-adoption-guide.md](./docs/00-adoption-guide.md) |
-| **Engineer** | [docs/11-implementation.md](./docs/11-implementation.md) |
-| **Leadership / security** | [docs/18-official-mcp-packages-risk-brief.md](./docs/18-official-mcp-packages-risk-brief.md) |
-| **Full index** | [docs/README.md](./docs/README.md) |
+## Next steps
 
-**Agents:** read [AGENTS.md](./AGENTS.md) before changing write paths or policy.
-
----
-
-## Key artifacts
-
-| Path | Purpose |
-|------|---------|
-| [packages/policy/mqm-policy.yaml](./packages/policy/mqm-policy.yaml) | Retention, deny patterns, RBAC, namespaces |
-| [journeys/](./journeys/) | Tier 2 curated journey YAML (human PR only) |
-| [cursor/mcp.json](./cursor/mcp.json) | Cursor MCP config |
-| [ai-inventory.yaml](./ai-inventory.yaml) | LL-2026-04 AI inventory (draft — compliance sign-off) |
-| [docs/tools.json](./docs/tools.json) | Machine-readable MCP tool contract |
-
----
-
-## Architecture (summary)
-
-```mermaid
-flowchart LR
-  CI[Playwright reporter] --> PIPE[pipeline + policy]
-  PIPE --> T1[(Tier 1 SQLite)]
-  CUR[Cursor agent] --> MCP[mortgage-qa-memory MCP]
-  MCP --> T1
-  MCP --> T2[(Tier 2 journeys git)]
-  MCP --> AUD[(audit log)]
-```
-
-Details: [docs/01-architecture-overview.md](./docs/01-architecture-overview.md).
+See [PLAN.md](./PLAN.md) v3 for the live roadmap and open questions for the QA
+team.

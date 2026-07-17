@@ -3,6 +3,7 @@ export * from "./signature.js";
 export * from "./redact.js";
 export * from "./policy.js";
 export * from "./db.js";
+export * from "./graph.js";
 export * from "./pipeline.js";
 export * from "./purge.js";
 export * from "./queries.js";

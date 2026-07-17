@@ -16,13 +16,11 @@
     "test": "npm run test --workspaces --if-present",
     "purge": "tsx packages/shared/src/purge.ts",
     "seed:demo": "tsx packages/reporter/src/seed-demo.ts",
-    "seed:demo:namespaces": "tsx packages/reporter/src/seed-demo-namespaces.ts",
     "mcp": "tsx packages/mcp-server/src/index.ts",
+    "mcp:graph": "tsx packages/mcp-server/src/graph-index.ts",
     "manifest": "tsx packages/mcp-server/src/manifest.ts",
     "smoke": "tsx packages/mcp-server/src/smoke.ts",
-    "console": "tsx packages/console/src/server.ts",
-    "desktop": "npm run console",
-    "demo": "npm run seed:demo && npm run seed:demo:namespaces && npm run smoke && npm run console",
+    "smoke:graph": "tsx packages/mcp-server/src/graph-smoke.ts",
     "eval": "tsx eval/run-eval.ts",
     "test:e2e": "playwright test"
   },
@@ -32,5 +30,8 @@
     "@types/node": "^22.7.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server-memory": "^2026.7.4"
   }
 }
